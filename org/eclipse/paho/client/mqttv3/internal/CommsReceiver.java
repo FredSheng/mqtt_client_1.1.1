@@ -15,6 +15,7 @@
  */
 package org.eclipse.paho.client.mqttv3.internal;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -151,6 +152,17 @@ public class CommsReceiver implements Runnable {
 				running = false;
 				// Token maybe null but that is handled in shutdown
 				clientComms.shutdownConnection(token, ex);
+			} catch (EOFException eof) {
+				//@TRACE 853=Stopping due to IOException
+				log.fine(CLASS_NAME,methodName + "EOFException","853");
+
+				running = false;
+				// An EOFException could be raised if the broker processes the
+				// DISCONNECT and ends the socket before we complete. As such,
+				// only shutdown the connection if we're not already shutting down.
+				if (!clientComms.isDisconnecting()) {
+					clientComms.shutdownConnection(token, new MqttException(MqttException.REASON_CODE_CONNECTION_LOST_BUT_NOT_RECONNECT, eof));
+				}
 			}
 			catch (IOException ioe) {
 				//@TRACE 853=Stopping due to IOException

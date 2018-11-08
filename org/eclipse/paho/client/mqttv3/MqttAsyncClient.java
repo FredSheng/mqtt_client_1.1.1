@@ -636,6 +636,9 @@ public class MqttAsyncClient implements IMqttAsyncClient {
 			}
 
 			public void connectionLost(Throwable cause) {
+				if (null != cause && cause instanceof MqttException && ((MqttException)cause).getReasonCode() == MqttException.REASON_CODE_CONNECTION_LOST_BUT_NOT_RECONNECT) {
+					return;
+				}
 				if(automaticReconnect){
 						// Automatic reconnect is set so make sure comms is in resting state
 						comms.setRestingState(true);

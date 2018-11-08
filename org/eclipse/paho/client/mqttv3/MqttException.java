@@ -127,6 +127,8 @@ public class MqttException extends Exception {
 	 * will provide more details. 
 	 */
 	public static final short REASON_CODE_CONNECTION_LOST               = 32109;
+
+	public static final short REASON_CODE_CONNECTION_LOST_BUT_NOT_RECONNECT = 32333;
 	
 	/**
 	 * A connect operation in already in progress, only one connect can happen
